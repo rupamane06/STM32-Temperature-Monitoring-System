@@ -6,7 +6,7 @@ ADC_HandleTypeDef hadc1;
 UART_HandleTypeDef huart2;
 
 uint32_t adc_value;
-char msg[50];
+char msg[100];
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -19,26 +19,32 @@ int main(void)
   SystemClock_Config();
 
   MX_GPIO_Init();
-  MX_ADC1_Init();
-  MX_USART2_UART_Init();
+  MX_ADC1_Init(); // Configured for PA0
+  MX_USART2_UART_Init(); // Configured for PA2 (TX)
 
   while (1)
   {
+    // 1. Start ADC conversion on PA0
     HAL_ADC_Start(&hadc1);
     HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
     adc_value = HAL_ADC_GetValue(&hadc1);
 
-    float voltage = (adc_value * 3.3) / 4095;
-    float temperature = voltage * 100; // LM35
+    // 2. Conversion Logic: 12-bit ADC (4095) with 3.3V Vref
+    float voltage = (adc_value * 3.3f) / 4095.0f;
+    float temperature = voltage * 100.0f; // 10mV/C scaling for LM35
 
-    sprintf(msg, "Temp: %.2f C\r\n", temperature);
+    // 3. Control LED (PA5) and Format Message
+    if (temperature > 30.0f) {
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+      sprintf(msg, "Temp: %.2f C -> LED ON\r\n", temperature);
+    } else {
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+      sprintf(msg, "Temp: %.2f C\r\n", temperature);
+    }
+
+    // 4. Transmit via UART2 (PA2)
     HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-    if (temperature > 30)
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-    else
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-
-    HAL_Delay(1000);
+    HAL_Delay(1000); // 1-second sampling rate
   }
 }
