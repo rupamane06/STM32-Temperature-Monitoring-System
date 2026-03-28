@@ -1,0 +1,22 @@
+PROJECT FLOW:
+
+1. Initialize STM32 HAL and peripherals
+2. Configure ADC for analog input
+3. Configure UART for serial communication
+4. Read analog data from sensor
+5. Convert ADC value to temperature
+6. Send data via UART
+7. Control LED based on threshold
+
+KEY LEARNINGS:
+
+* ADC conversion and calibration
+* UART communication handling
+* GPIO control
+* Embedded system integration
+
+CHALLENGES FACED:
+
+* Understanding ADC resolution and scaling
+* Handling UART communication formatting
+* Debugging peripheral configuration
