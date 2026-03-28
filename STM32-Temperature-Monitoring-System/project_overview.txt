@@ -1,22 +1,27 @@
-PROJECT FLOW:
+PROJECT TITLE: STM32 Temperature Monitoring System
+AUTHOR: Rupa Mane
 
-1. Initialize STM32 HAL and peripherals
-2. Configure ADC for analog input
-3. Configure UART for serial communication
-4. Read analog data from sensor
-5. Convert ADC value to temperature
-6. Send data via UART
-7. Control LED based on threshold
+ENGINEERING FLOW & ARCHITECTURE:
+
+1. Peripheral Clock Configuration: 
+   - Initialized the RCC (Reset and Clock Control) to enable clocks for GPIOA, ADC1, and USART2.
+2. ADC Configuration: 
+   - Set the sampling time and resolution to 12-bit to ensure accurate readings from the LM35 sensor.
+3. UART Parameterization: 
+   - Configured the word length (8 bits), stop bits (1), and parity (None) to match the PC terminal settings.
+4. Firmware Logic: 
+   - Developed a super-loop architecture to continuously monitor environmental changes and provide immediate LED feedback.
+
+TECHNICAL CHALLENGES & SOLUTIONS:
+
+- The Scaling Challenge: 
+  Converting a raw binary ADC value into a human-readable temperature required precise floating-point math to avoid rounding errors during the 12-bit conversion.
+- Signal Integrity: 
+  Addressed potential fluctuations in ADC readings by introducing a sampling delay, allowing the sensor signal to stabilize between read cycles.
+- Pin Multiplexing: 
+  Carefully configured the Pinout in STM32CubeIDE to ensure that the USART2 TX function on PA2 did not conflict with other required hardware peripherals.
 
 KEY LEARNINGS:
-
-* ADC conversion and calibration
-* UART communication handling
-* GPIO control
-* Embedded system integration
-
-CHALLENGES FACED:
-
-* Understanding ADC resolution and scaling
-* Handling UART communication formatting
-* Debugging peripheral configuration
+- Deep understanding of HAL (Hardware Abstraction Layer) drivers for STM32.
+- Expertise in interpreting hardware datasheets for voltage-to-temperature scaling.
+- Proficiency in hardware debugging using serial terminal feedback (Tera Term/UART).
